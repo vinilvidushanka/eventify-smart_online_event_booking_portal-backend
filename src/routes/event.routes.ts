@@ -1,0 +1,28 @@
+import {Router} from "express";
+import{
+    saveEvent,
+    getAllEvents,
+    getEventById,
+    updateEvent,
+    deleteEvent
+} from "../controllers/event.controller";
+import{authorizeRoles} from "../middleware/auth.middleware";
+
+const eventRouter:Router =Router();
+
+// eventRouter.post("/save",authorizeRoles("organizer"),saveEvent);
+eventRouter.post("/save", (req, res, next) => {
+    console.log("POST /api/events/save called");
+    next();
+}, authorizeRoles("organizer"), saveEvent);
+eventRouter.get("/all",getAllEvents);
+eventRouter.get("/:id",getEventById);
+eventRouter.put("/update/:id",authorizeRoles("organizer"),updateEvent);
+eventRouter.delete("/delete/:id",authorizeRoles("organizer"),deleteEvent);
+eventRouter.get("/test", (req, res) => {
+    res.json({ msg: "events router working" });
+});
+
+
+
+export default eventRouter;
