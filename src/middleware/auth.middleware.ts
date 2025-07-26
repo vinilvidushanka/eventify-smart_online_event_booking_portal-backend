@@ -10,7 +10,7 @@ export const authenticateToken = (req:Request,res:Response,next:NextFunction) =>
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
-        res.status(401).json({error:'auth token is not present in ' + 'request header'});
+        res.status(401).json({error:'auth token is not present in request header'});
         return;
     }
     jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -23,7 +23,7 @@ export const authenticateToken = (req:Request,res:Response,next:NextFunction) =>
     });
 };
 
-export const authorizeRoles = (roles: string) => {
+export const authorizeRoles = (...roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         const user = (req as Request & { user?: any }).user;
         if (!user || !roles.includes(user.role)) {

@@ -226,6 +226,21 @@ export const refreshAccessToken = (refreshToken: string) => {
     }
 };
 
+/*export const getAllUsers = async (): Promise<UserDto[]> => {
+    const users = await User.find(); // ✅ returns an array of UserDocuments
+
+    return users.map((user) => {
+        const plainUser = user.toObject(); // 🟡 recommended if using mongoose types
+        return {
+            id: plainUser.id,
+            username: plainUser.username,
+            email: plainUser.email,
+            password: "", // 🔐 hide password
+            role: plainUser.role
+        };
+    });
+};*/
+
 /**
  * 🚪 Logout user
  */

@@ -23,6 +23,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use("/api/auth", authRouter);
 app.use("/api/events", authenticateToken, eventRouter);
-app.use("/api/concerts", concertRouter);
+app.use("/api/concerts",authenticateToken, concertRouter);
 
 export default app;

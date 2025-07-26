@@ -1,19 +1,19 @@
 import {Router} from "express";
 import {
-    saveConcert/*,
+    saveConcert,
     getAllConcerts,
     getConcertById,
     updateConcert,
-    deleteConcert*/
+    deleteConcert
 } from "../controllers/concert.controller";
-// import{authorizeRoles} from "../middleware/auth.middleware";
+import{authorizeRoles} from "../middleware/auth.middleware";
 
 const concertRouter:Router = Router();
 
-concertRouter.post("/save"/*,authorizeRoles("organizer")*/,saveConcert);
-/*concertRouter.get("/all",getAllConcerts);
+concertRouter.post("/save",authorizeRoles("organizer"),saveConcert);
+concertRouter.get("/all", authorizeRoles("organizer", "customer"), getAllConcerts);
 concertRouter.get("/:id",getConcertById);
 concertRouter.put("/update/:id",authorizeRoles("organizer"),updateConcert);
-concertRouter.delete("/delete/:id",authorizeRoles("organizer"),deleteConcert);*/
+concertRouter.delete("/delete/:id",authorizeRoles("organizer"),deleteConcert);
 
 export default concertRouter;

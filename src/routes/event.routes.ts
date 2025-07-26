@@ -15,7 +15,7 @@ eventRouter.post("/save", (req, res, next) => {
     console.log("POST /api/events/save called");
     next();
 }, authorizeRoles("organizer"), saveEvent);
-eventRouter.get("/all",getAllEvents);
+eventRouter.get("/all", authorizeRoles("organizer", "customer"),getAllEvents);
 eventRouter.get("/:id",getEventById);
 eventRouter.put("/update/:id",authorizeRoles("organizer"),updateEvent);
 eventRouter.delete("/delete/:id",authorizeRoles("organizer"),deleteEvent);
