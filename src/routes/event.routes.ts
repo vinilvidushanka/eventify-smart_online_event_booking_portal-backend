@@ -7,11 +7,12 @@ import{
     deleteEvent
 } from "../controllers/event.controller";
 import{authorizeRoles} from "../middleware/auth.middleware";
+import {upload} from "../uploads/upload";
 
 const eventRouter:Router =Router();
 
 // eventRouter.post("/save",authorizeRoles("organizer"),saveEvent);
-eventRouter.post("/save", (req, res, next) => {
+eventRouter.post("/save", upload.single("image"), (req, res, next) => {
     console.log("POST /api/events/save called");
     next();
 }, authorizeRoles("organizer"), saveEvent);

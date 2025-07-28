@@ -170,6 +170,54 @@ export const authenticateUser = async (usernameOrEmail: string, password: string
     return { accessToken, refreshToken };
 };
 
+export const authenticateUser1 = async (usernameOrEmail: string, password: string) => {
+    console.log("authenticateUser called with:", usernameOrEmail, password);
+
+    const existingUser =
+        testUsers.find(
+            (user) => user.username === usernameOrEmail || user.email === usernameOrEmail
+        ) ||
+        (await User.findOne({
+            $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+        }));
+
+    console.log("Found user:", existingUser);
+
+    if (!existingUser) {
+        console.log("No user found");
+        return null;
+    }
+
+    const passwordValid = bcrypt.compareSync(password, existingUser.password);
+    console.log("Password valid:", passwordValid);
+
+    if (!passwordValid) {
+        return null;
+    }
+
+    const accessToken = jwt.sign(
+        {
+            id: existingUser.id,
+            username: existingUser.username,
+            role: existingUser.role,
+        },
+        JWT_SECRET,
+        { expiresIn: "15m" }
+    );
+
+    const refreshToken = jwt.sign(
+        {
+            username: existingUser.username,
+        },
+        REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    refreshTokens.add(refreshToken);
+    return { accessToken, refreshToken };
+};
+
+
 /**
  * ✅ Validate user data before saving
  */
@@ -189,7 +237,7 @@ export const validateUsers = async (user: UserDto): Promise<string | null> => {
 /**
  * 📝 Save a new user to DB (with hashed password)
  */
-export const saveUser = async (user: UserDto): Promise<UserDto> => {
+/*export const saveUser = async (user: UserDto): Promise<UserDto> => {
     const hashedPassword = bcrypt.hashSync(user.password, 10);
 
     const newUser = await User.create({
@@ -201,7 +249,25 @@ export const saveUser = async (user: UserDto): Promise<UserDto> => {
     });
 
     return newUser;
+};*/
+export const saveUser = async (user: UserDto): Promise<UserDto> => {
+    if (!user.username || !user.email || !user.password || !user.role) {
+        throw new Error("Missing required fields");
+    }
+
+    const hashedPassword = bcrypt.hashSync(user.password, 10);
+
+    const newUser = await User.create({
+        id: Date.now(),
+        username: user.username,
+        email: user.email,
+        password: hashedPassword,
+        role: user.role,
+    });
+
+    return newUser;
 };
+
 
 /**
  * 🔁 Validate refresh token and generate new access token
@@ -226,20 +292,18 @@ export const refreshAccessToken = (refreshToken: string) => {
     }
 };
 
-/*export const getAllUsers = async (): Promise<UserDto[]> => {
-    const users = await User.find(); // ✅ returns an array of UserDocuments
+export const getAllUsers = async (): Promise<UserDto[]> => {
+    const users = await User.find().lean(); // <- best practice if not modifying
 
-    return users.map((user) => {
-        const plainUser = user.toObject(); // 🟡 recommended if using mongoose types
-        return {
-            id: plainUser.id,
-            username: plainUser.username,
-            email: plainUser.email,
-            password: "", // 🔐 hide password
-            role: plainUser.role
-        };
-    });
-};*/
+    return users.map((user) => ({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        password: "",
+        role: user.role
+    }));
+};
+
 
 /**
  * 🚪 Logout user
