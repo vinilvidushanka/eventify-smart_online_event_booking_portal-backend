@@ -12,10 +12,16 @@ import {upload} from "../uploads/upload";
 const eventRouter:Router =Router();
 
 // eventRouter.post("/save",authorizeRoles("organizer"),saveEvent);
-eventRouter.post("/save", upload.single("image"), (req, res, next) => {
-    console.log("POST /api/events/save called");
-    next();
-}, authorizeRoles("organizer"), saveEvent);
+eventRouter.post("/save",
+    authorizeRoles("organizer"),
+    upload.single("image"),
+    (req, res, next) => {
+        console.log("POST /api/events/save called");
+        next();
+    },
+    saveEvent
+);
+
 eventRouter.get("/all", authorizeRoles("organizer", "customer"),getAllEvents);
 eventRouter.get("/:id",getEventById);
 eventRouter.put("/update/:id",authorizeRoles("organizer"),updateEvent);

@@ -1,5 +1,6 @@
 import {Request,Response} from "express";
 import * as concertService from "../services/concert.service";
+import {ConcertDto} from "../dto/concert.dto";
 
 export const getAllConcerts = async (req:Request,res:Response) => {
     try {
@@ -11,7 +12,7 @@ export const getAllConcerts = async (req:Request,res:Response) => {
     }
 }
 
-export const saveConcert = async (req:Request,res:Response) => {
+/*export const saveConcert = async (req:Request,res:Response) => {
     try {
         const newConcert = req.body;
         const validationError = await concertService.validateConcert(newConcert);
@@ -25,7 +26,70 @@ export const saveConcert = async (req:Request,res:Response) => {
         console.error(error);
         res.status(500).json({error:"Something went wrong"});
     }
-}
+}*/
+
+export const saveConcert = async (req: Request, res: Response) => {
+    try {
+        // multer මගින් upload කරපු file එක
+        const imageFile = req.file;
+        if (!imageFile) {
+            return res.status(400).json({ error: "Image file is required" });
+        }
+
+        const {
+            title,
+            description,
+            price,
+            currency,
+            venue,
+            date,
+            time,
+        } = req.body;
+
+        // අවශ්‍ය සියලු fields පවතිනවාද කියලා check කරන්න
+        if (
+            !title ||
+            !description ||
+            !price ||
+            !currency ||
+            !venue ||
+            !date ||
+            !time
+        ) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        // file buffer එක base64 encode කරලා Data URL එකක් හදන්නෙ
+        const imageBase64 = imageFile.buffer.toString("base64");
+        const imageDataUrl = `data:${imageFile.mimetype};base64,${imageBase64}`;
+
+        // payload එකට type cast කරලා assign කරනවා
+        const concertPayload: ConcertDto = {
+            title: String(title).trim(),
+            description: String(description).trim(),
+            price: parseFloat(price),
+            currency: String(currency).trim(),
+            venue: String(venue).trim(),
+            date: String(date),
+            time: String(time),
+            image: imageDataUrl,
+        };
+
+        // service එකෙන් validate කරනවා
+        const validationError = await concertService.validateConcert(concertPayload);
+        if (validationError) {
+            return res.status(400).json({ error: validationError });
+        }
+
+        // DB එකට save කරනවා
+        const savedConcert = await concertService.saveConcert(concertPayload);
+
+        return res.status(201).json(savedConcert);
+    } catch (error) {
+        console.error("saveConcert error:", error);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+};
 
 export const updateConcert = async (req:Request,res:Response) => {
     const concertId = parseInt(req.params.id);

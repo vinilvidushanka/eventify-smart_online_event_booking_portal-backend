@@ -1,24 +1,6 @@
 import {Request,Response} from "express";
 import * as eventService from "../services/event.service";
 
-/*export const saveEvent = async (req:Request,res:Response)=>{
-    /!*console.log("🎯 saveEvent triggered!");
-    res.status(200).json({ message: "Save route working" });*!/
-    try {
-        const newEvent = req.body
-        const validationError = await eventService.validateEvent(newEvent);
-        const imagePath = req.file?.filename || "";
-        if (validationError) {
-            res.status(400).json({error: validationError});
-            return;
-        }
-        const saveEvent = await eventService.saveEvent(newEvent);
-        res.status(201).json(saveEvent);
-    }catch (error) {
-        console.error(error);
-        res.status(500).json({error:"Something went wrong"});
-    }
-}*/
 
 export const saveEvent = async (req: Request, res: Response) => {
     try {

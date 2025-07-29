@@ -1,36 +1,3 @@
-/*
-import {Request,Response} from "express";
-import * as authService from "../services/auth.service"
-
-export const authenticateUser = async (req:Request,res:Response)=>{
-    console.log("Login Request Body:", req.body);
-    const {username,password} = req.body;
-    const authTokens =await authService.authenticateUser(username,password)
-
-    if (!authTokens){
-        console.log(username,password);
-        res.status(401).json({error:"Invalid username or password"});
-        return;
-    }
-    console.log(username,password);
-    res.json(authTokens);
-}
-
-export const saveUser = async (req:Request,res:Response)=>{
-    try {
-        const newUser = req.body;
-        const validationError = await authService.validateUsers(newUser);
-        if (validationError) {
-            res.status(400).json({error: validationError});
-            return;
-        }
-        const saveUser = await authService.saveUser(newUser);
-        res.status(201).json(saveUser);
-    }catch (error){
-
-    }
-}*/
-
 import { Request, Response } from "express";
 import * as authService from "../services/auth.service";
 

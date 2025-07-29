@@ -35,14 +35,3 @@ export const authorizeRoles = (...roles: string[]) => {
     }
 }
 
-/*export const authorizeRoles = (...roles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const user = (req as Request & { user?: any }).user;
-        if (!user || !roles.includes(user.role)) {
-            return res.status(403).json({
-                error: "Access denied! User doesn't have permission to perform this action"
-            });
-        }
-        next();
-    };
-};*/
